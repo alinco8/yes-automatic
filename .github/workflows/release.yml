@@ -1,0 +1,72 @@
+name: Release
+on:
+  push:
+    branches:
+      - main
+permissions: write-all
+jobs:
+  determine-release:
+    runs-on: ubuntu-latest
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
+    outputs:
+      release_needed: ${{ steps.check_release.outputs.release_needed }}
+      next_version: ${{ steps.check_release.outputs.next_version }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: oven-sh/setup-bun@v2
+      - run: bun i --frozen-lockfile
+      - id: check_release
+        run: |
+          NEXT_VERSION=$(bunx semantic-release --dry-run | grep -oP 'The next release version is \K[0-9]+\.[0-9]+\.[0-9]+')
+          if [ -z "$NEXT_VERSION" ]; then
+            echo "release_needed=false" >> $GITHUB_OUTPUT
+          else
+            echo "release_needed=true" >> $GITHUB_OUTPUT
+            echo "next_version=$NEXT_VERSION" >> $GITHUB_OUTPUT
+          fi
+  build:
+    needs: determine-release
+    if: needs.determine-release.outputs.release_needed == 'true'
+    strategy:
+      matrix:
+        os: [macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    env:
+      CARGO_TERM_COLOR: always
+    steps:
+      - uses: actions/checkout@v4
+      - run: rustup toolchain install stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: "./src-tauri -> target"
+      - run: cargo install cargo-bump --locked
+      - uses: oven-sh/setup-bun@v2
+      - run: bun i --frozen-lockfile
+      - run: |
+          (cd src-tauri && cargo bump ${nextRelease.version}) &&
+          npm version --no-git-tag-version ${nextRelease.version} &&
+          bun tauri build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: build-${{ matrix.os }}
+          path: |
+            src-tauri/target/release/bundle/dmg/*.dmg
+            src-tauri/target/release/bundle/msi/*.msi
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [macos-latest, windows-latest]
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: build-${{ matrix.os }}
+          path: build
+      - uses: oven-sh/setup-bun@v2
+      - run: bun i --frozen-lockfile
+      - run: bunx semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
