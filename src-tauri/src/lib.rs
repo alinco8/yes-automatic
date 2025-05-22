@@ -9,7 +9,7 @@ use tauri::{
     menu::{CheckMenuItem, MenuBuilder},
     path::BaseDirectory,
     tray::TrayIconBuilder,
-    ActivationPolicy, App, AppHandle, Manager, Runtime,
+    App, AppHandle, Manager, Runtime,
 };
 use tauri_plugin_dialog::DialogExt;
 use tauri_plugin_opener::OpenerExt;
@@ -51,6 +51,8 @@ fn setup_app(app: &mut App) -> anyhow::Result<()> {
 
     #[cfg(target_os = "macos")]
     {
+        use tauri::ActivationPolicy;
+
         app.set_activation_policy(ActivationPolicy::Accessory);
     }
 

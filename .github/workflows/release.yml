@@ -48,8 +48,8 @@ jobs:
       - uses: oven-sh/setup-bun@v2
       - run: bun i --frozen-lockfile
       - run: |
-          (cd src-tauri && cargo bump ${nextRelease.version}) &&
-          npm version --no-git-tag-version ${nextRelease.version} &&
+          (cd src-tauri && cargo bump ${{ needs.determine-release.outputs.next_version }}) &&
+          npm version --no-git-tag-version ${{ needs.determine-release.outputs.next_version }} &&
           bun tauri build
       - uses: actions/upload-artifact@v4
         with:
