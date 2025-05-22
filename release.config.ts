@@ -56,8 +56,8 @@ export default {
         }],
         ['@semantic-release/github', {
             assets: [
-                'build/*.dmg',
-                'build/*.msi',
+                'build/**/*.dmg',
+                'build/**/*.msi',
             ],
         }],
     ],
