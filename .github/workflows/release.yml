@@ -60,13 +60,10 @@ jobs:
   release:
     needs: build
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        os: [macos-latest, windows-latest]
     steps:
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
-          name: build-${{ matrix.os }}
+          pattern: build-*
           path: build
       - uses: oven-sh/setup-bun@v2
       - run: bun i --frozen-lockfile
