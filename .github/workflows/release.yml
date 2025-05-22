@@ -26,6 +26,8 @@ jobs:
             echo "release_needed=true" >> $GITHUB_OUTPUT
             echo "next_version=$NEXT_VERSION" >> $GITHUB_OUTPUT
           fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   build:
     needs: determine-release
     if: needs.determine-release.outputs.release_needed == 'true'
