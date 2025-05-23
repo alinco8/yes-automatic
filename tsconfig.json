@@ -1,34 +1,12 @@
 {
-    "include": ["**/*", ".storybook/**/*", ".react-router/types/**/*"],
-    "exclude": ["src-tauri/"],
     "compilerOptions": {
-        "lib": ["DOM", "DOM.Iterable", "ES2022"],
-        "types": ["bun", "vite/client"],
-        "rootDirs": [".", "./.react-router/types"],
-        "isolatedModules": true,
-        "verbatimModuleSyntax": true,
-        "esModuleInterop": true,
-        "jsx": "react-jsx",
-        "module": "ESNext",
-        "moduleResolution": "Bundler",
-        "resolveJsonModule": true,
-        "target": "ES2022",
-        "strict": true,
-        "noImplicitAny": true,
-        "strictNullChecks": true,
-        "allowJs": true,
+        "composite": true,
         "skipLibCheck": true,
-        "forceConsistentCasingInFileNames": true,
-        "baseUrl": ".",
-        "paths": {
-            "~/*": ["./app/*"]
-        },
-
-        "noEmit": true
+        "module": "ESNext",
+        "moduleResolution": "bundler",
+        "allowSyntheticDefaultImports": true,
+        "verbatimModuleSyntax": true,
+        "isolatedModules": true
     },
-    "references": [
-        {
-            "path": "./tsconfig.node.json"
-        }
-    ]
+    "include": ["**/*.ts"]
 }
