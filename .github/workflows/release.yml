@@ -54,7 +54,8 @@ jobs:
             libappindicator3-dev \
             librsvg2-dev \
             patchelf \
-            libglib2.0-dev
+            libglib2.0-dev \
+            libxdo-dev
       - run: cargo install cargo-bump --locked
       - uses: oven-sh/setup-bun@v2
       - run: bun i --frozen-lockfile
