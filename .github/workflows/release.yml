@@ -34,7 +34,7 @@ jobs:
     if: needs.determine-release.outputs.release_needed == 'true'
     strategy:
       matrix:
-        os: [macos-latest, windows-latest]
+        os: [macos-latest, windows-latest, ubuntu-latest]
     runs-on: ${{ matrix.os }}
     env:
       CARGO_TERM_COLOR: always
@@ -54,9 +54,13 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: build-${{ matrix.os }}
+          if-no-files-found: ignore
           path: |
             src-tauri/target/release/bundle/dmg/*.dmg
             src-tauri/target/release/bundle/msi/*.msi
+            src-tauri/target/release/bundle/appimage/*.AppImage
+            src-tauri/target/release/bundle/deb/*.deb
+            src-tauri/target/release/bundle/rpm/*.rpm
   release:
     needs: build
     runs-on: ubuntu-latest
